@@ -34,7 +34,7 @@ void Engine::printStartMenu()
 	std::cout << "1. Petersen Graph with unit weight edges" << std::endl;
 	std::cout << "2. Complete Graph with unit weight edges" << std::endl;
 	std::cout << "3. Quit program" << std::endl;
-	std::cout << " Please enter your choice: ";
+	std::cout << "Please enter your choice: ";
 }
 
 void Engine::startMenuChoices(int choice)
@@ -59,6 +59,7 @@ void Engine::startMenuChoices(int choice)
 
 void Engine::parseMasterData()
 {
+	longestGame = 0;
 	p1size = 0;
 	p2size = 0;
 	std::ifstream master;
@@ -85,6 +86,8 @@ void Engine::parseMasterData()
 			parseLine.pop_back();
 			parseLine.pop_back();
 			p1 << parseLine << std::endl;
+			if (parseLine.size() > longestGame)
+				longestGame = parseLine.size();
 		}
 		else if(*(iter) == '2')
 		{
@@ -92,6 +95,8 @@ void Engine::parseMasterData()
 			parseLine.pop_back();
 			parseLine.pop_back();
 			p2 << parseLine << std::endl;
+			if (parseLine.size() > longestGame)
+				longestGame = parseLine.size();
 		}
 		master.clear();
 	}
@@ -101,21 +106,62 @@ void Engine::parseMasterData()
 	master.close();	
 }	
 
+void Engine::parsePlayerLogicalData()
+{
+	std::ifstream p1;
+	std::ifstream p2;
+	std::ofstream p1logical;
+	std::ofstream p2logical;
+	std::string player1_data_path = "output_data/player1_moves.txt";
+	std::string player2_data_path = "output_data/player2_moves.txt";
+	std::string player1_logical_data_path = "output_data/player1_logical_moves.txt";
+	std::string player2_logical_data_path = "output_data/player2_logical_moves.txt";
+	p1.open(player1_data_path);
+	p2.open(player2_data_path);
+	p1logical.open(player1_logical_data_path, std::ios_base::app);
+	p2logical.open(player2_logical_data_path, std::ios_base::app);
+	std::string testLine;
+	while (std::getline(p1, testLine))
+	{
+		rotateBarParsePlayer1();
+		if (testLine.size() == longestGame)
+			p1logical << testLine << std::endl;
+	}
+	std::cout << "Logical moves extracted from player 1 data successfully!" << std::endl;
+	while (std::getline(p2, testLine))
+	{
+		rotateBarParsePlayer2();
+		if (testLine.size() == longestGame)
+			p1logical << testLine << std::endl;
+	}
+	std::cout << "Logical moves extracted from player 2 data successfully!" << std::endl;
+	p1.close();
+	p2.close();
+	p1logical.close();
+	p2logical.close();
+}
+
 void Engine::dataAnalysis(int choice)
 {
+//	longestGame = 1;
 	std::ifstream p1;
 	std::ifstream p2;
 	std::ofstream results;
 	std::string player1_data_path = "output_data/player1_moves.txt";
 	std::string player2_data_path = "output_data/player2_moves.txt";
 	std::string results_data_path = "output_data/results.txt";
+	std::string player1_logical_data_path = "output_data/player1_logical_moves.txt";
+	std::string player2_logical_data_path = "output_data/player2_logical_moves.txt";
 	p1.open(player1_data_path);
 	p2.open(player2_data_path);
+//	p1_logical.open(player1_logical_data_path);
+//	p2_logical.open(player2_logical_data_path);
 	results.open(results_data_path);
 	std::string testLine;
 	std::vector<std::string> player1moves;
 	std::vector<std::string> player2moves;
-	barCount = 0;
+	std::vector<std::string> player1logicalmoves;
+	std::vector<std::string> player2logicalmoves;
 	while (std::getline(p1, testLine))
 	{
 		rotateBarAnalyzeP1();
@@ -124,8 +170,7 @@ void Engine::dataAnalysis(int choice)
 			player1moves.push_back(testLine);
 		testLine.clear();
 	}
-	std::cout << "\nPlayer 1 data analyzed!" << std::endl;	
-	barCount = 0;
+	std::cout << "\nPlayer 1 data analyzed!" << std::endl;
 	while (std::getline(p2, testLine))
 	{
 		rotateBarAnalyzeP2();
@@ -170,6 +215,8 @@ void Engine::dataAnalysis(int choice)
 	{
 		std::cout << *i << std::endl;
 		results << *i << std::endl;
+//		if (i->size() > longestGame)
+//			longestGame = i->size();
 	}
 	std::cout << std::endl;
 	results << std::endl;
@@ -179,9 +226,13 @@ void Engine::dataAnalysis(int choice)
 	{
 		std::cout << *i << std::endl;
 		results << *i << std::endl;
+//		if (i->size() > longestGame)
+//			longestGame = i->size();
 	}
 	std::cout << std::endl;
 	results << std::endl;
+	std::cout << "The longest game was " << (longestGame + 1) / 2 << " moves.\n" << std::endl;
+	results << "The longest game was " << (longestGame + 1) / 2 << " moves.\n" << std::endl;
 	results.close();
 }
 
@@ -198,6 +249,42 @@ void Engine::rotateBarParse()
 	else
 	{
 		std::cout << '\r' << barspin[whichOne] << "  Please wait while the data is sorted...";
+	}
+	std::cout.flush();
+	return;
+}
+
+void Engine::rotateBarParsePlayer1()
+{
+	barCount++;
+	char barspin[4] = {'\\', '|', '/', '-'};
+	int whichOne;
+	whichOne = barCount % 4;
+	if (whichOne == 3)
+	{
+		std::cout << '\r' << barspin[whichOne] << "  Please wait while player 1 logical moves are extracted...";
+	}
+	else
+	{
+		std::cout << '\r' << barspin[whichOne] << "  Please wait while player 1 logical moves are extracted";
+	}
+	std::cout.flush();
+	return;
+}
+
+void Engine::rotateBarParsePlayer2()
+{
+	barCount++;
+	char barspin[4] = {'\\', '|', '/', '-'};
+	int whichOne;
+	whichOne = barCount % 4;
+	if (whichOne == 3)
+	{
+		std::cout << '\r' << barspin[whichOne] << "  Please wait while player 2 logical moves are extracted";
+	}
+	else
+	{
+		std::cout << '\r' << barspin[whichOne] << "  Please wait while player 2 logical moves are extracted";
 	}
 	std::cout.flush();
 	return;
@@ -289,6 +376,7 @@ void Engine::createCompleteGraph(int numGames, int numNodes)
 	}
 	std::cout << "-----------------------------------------------\n" << std::endl;
 	parseMasterData();
+	parsePlayerLogicalData();
 	dataAnalysis(numGames);
 	//Surface *a = new Surface(choice);
 	std::clock_t endTime = clock();

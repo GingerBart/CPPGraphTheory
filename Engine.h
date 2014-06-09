@@ -8,6 +8,7 @@ public:
 	Engine();
 	int p1size;
 	int p2size;
+	int longestGame;
 	   
 private:
 	void printIntro();
@@ -15,6 +16,8 @@ private:
 	void startMenuChoices(int);
 	void createPetersenGraph(int);
 	void rotateBarParse();
+	void rotateBarParsePlayer1();
+	void rotateBarParsePlayer2();
 	void rotateBarAnalyzeP1();
 	void rotateBarAnalyzeP2();
 	int barCount;
@@ -22,6 +25,7 @@ private:
 	int barCount2;
 	void createCompleteGraph(int, int);
 	void parseMasterData();
+	void parsePlayerLogicalData();
 	void dataAnalysis(int);
 };
 
