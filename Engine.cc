@@ -3,20 +3,17 @@
 #include "CompleteGraph.h"
 #include "Engine.h"
 
-#include <pthread.h>
 #include <string>
 #include <cstdio>
 #include <ctime>
 #include <fstream>	
-#include <vector>
 
-#define NUM_THREADS 2
+#include <vector>
 
 Engine::Engine()
 {
 	int choice = 0;
-	barCount1 = 0;
-	barCount2 = 0;
+	barCount = 0;
 	printIntro();
 	printStartMenu();
 	std::cin >> choice;
@@ -104,21 +101,21 @@ void Engine::parseMasterData()
 	master.close();	
 }	
 
-void Engine::dataAnalysis1(int choice)
+void Engine::dataAnalysis(int choice)
 {
 	std::ifstream p1;
-	
+	std::ifstream p2;
 	std::ofstream results;
 	std::string player1_data_path = "output_data/player1_moves.txt";
-	
+	std::string player2_data_path = "output_data/player2_moves.txt";
 	std::string results_data_path = "output_data/results.txt";
 	p1.open(player1_data_path);
-	
+	p2.open(player2_data_path);
 	results.open(results_data_path);
 	std::string testLine;
 	std::vector<std::string> player1moves;
-
-	barCount1 = 0;
+	std::vector<std::string> player2moves;
+	barCount = 0;
 	while (std::getline(p1, testLine))
 	{
 		rotateBarAnalyzeP1();
@@ -127,80 +124,8 @@ void Engine::dataAnalysis1(int choice)
 			player1moves.push_back(testLine);
 		testLine.clear();
 	}
-	
-	std::cout << std::endl;
-	results << std::endl;
-	p1.close();
-	
-	std::sort(player1moves.begin(), player1moves.end());
-	
-	for (std::vector<std::string>::iterator i = player1moves.begin(); i < player1moves.end(); i++)
-		std::cout << (*i) << std::endl;
-	 
-/*	std::sort(player2moves.begin(), player2moves.end());
-	int numberOfGamesPlayed = choice;
-	std::cout << "-----------------------------------------------" << std::endl;
-	results << "-----------------------------------------------" << std::endl;
-	std::cout << "Game Analysis" << std::endl;
-	results << "Game Analysis" << std::endl;
-	std::cout << std::endl;
-	results << std::endl;
-	std::cout << "Of the " << numberOfGamesPlayed << " games played:" << std::endl;
-	results << "Of the " << numberOfGamesPlayed << " games played:" << std::endl;
-	std::cout << std::endl;
-	results << std::endl;
-	std::cout << "Player 1 won " << p1size << "." << std::endl;
-	results << "Player 1 won " << p1size << "." << std::endl;
-	std::cout << "Player 2 won " << p2size << "." << std::endl;
-	results << "Player 2 won " << p2size << "." << std::endl;
-	std::cout << std::endl;
-	results << std::endl;
-	std::cout << "There are " << player1moves.size() << " unique moves for Player 1." << std::endl;
-	results << "There are " << player1moves.size() << " unique moves for Player 1." << std::endl;
-	std::cout << "There are " << player2moves.size() << " unique moves for Player 2." << std::endl;
-	results << "There are " << player2moves.size() << " unique moves for Player 2." << std::endl;
-	std::cout << std::endl;
-	results << std::endl;
-	std::cout << "The following moves led to Player 1's victory:" << std::endl;
-	results << "The following moves led to Player 1's victory:" << std::endl;
-	for (std::vector<std::string>::iterator i = player1moves.begin(); i != player1moves.end(); i++)
-	{
-		std::cout << *i << std::endl;
-		results << *i << std::endl;
-	}
-	std::cout << std::endl;
-	results << std::endl;
-	std::cout << "The following moves led to Player 2's victory:" << std::endl;
-	results << "The following moves led to Player 2's victory:" << std::endl;
-	for (std::vector<std::string>::iterator i = player2moves.begin(); i != player2moves.end(); i++)
-	{
-		std::cout << *i << std::endl;
-		results << *i << std::endl;
-	}
-	std::cout << std::endl;
-	results << std::endl;
-	results.close();
-*/
-	pthread_exit(NULL);
-}
-
-void Engine::dataAnalysis2(int choice)
-{
-
-	std::ifstream p2;
-//	std::ofstream results;
-
-	std::string player2_data_path = "output_data/player2_moves.txt";
-	std::string results_data_path = "output_data/results.txt";
-
-	p2.open(player2_data_path);
-//	results.open(results_data_path);
-	std::string testLine;
-
-	std::vector<std::string> player2moves;
-
-
-	barCount2 = 0;
+	std::cout << "\nPlayer 1 data analyzed!" << std::endl;	
+	barCount = 0;
 	while (std::getline(p2, testLine))
 	{
 		rotateBarAnalyzeP2();
@@ -212,17 +137,15 @@ void Engine::dataAnalysis2(int choice)
 	std::cout << "\nPlayer 2 data analyzed!" << std::endl;
 	std::cout << std::endl;
 	results << std::endl;
-
+	p1.close();
 	p2.close();
-
+	std::sort(player1moves.begin(), player1moves.end());
 	std::sort(player2moves.begin(), player2moves.end());
-	for (std::vector<std::string>::iterator i = player2moves.begin(); i < player2moves.end(); i++)
-		std::cout << (*i) << std::endl;
-/*	int numberOfGamesPlayed = choice;
+	int numberOfGamesPlayed = choice;
 	std::cout << "-----------------------------------------------" << std::endl;
 	results << "-----------------------------------------------" << std::endl;
-	std::cout << "Game Analysis" << std::endl;
-	results << "Game Analysis" << std::endl;
+	std::cout << "\nGame Analysis" << std::endl;
+	results << "\nGame Analysis" << std::endl;
 	std::cout << std::endl;
 	results << std::endl;
 	std::cout << "Of the " << numberOfGamesPlayed << " games played:" << std::endl;
@@ -260,8 +183,6 @@ void Engine::dataAnalysis2(int choice)
 	std::cout << std::endl;
 	results << std::endl;
 	results.close();
-*/
-	pthread_exit(NULL);
 }
 
 void Engine::rotateBarParse()
@@ -366,15 +287,9 @@ void Engine::createCompleteGraph(int numGames, int numNodes)
 		CompleteGraph *a = new CompleteGraph(i, numNodes);
 		delete a;
 	}
+	std::cout << "-----------------------------------------------\n" << std::endl;
 	parseMasterData();
-	pthread_t threads[NUM_THREADS];
-	for (int i = 0; i < 1; i++)
-	{
-		std::cout << "Creating thread" << i << std::endl;
-		pthread_create(&threads[i], NULL, dataAnalysis1(choice), NULL)
-		pthread_create(&threads[i], NULL, dataAnalysis2(choice), NULL)
-	}
-		//	dataAnalysis(numGames);
+	dataAnalysis(numGames);
 	//Surface *a = new Surface(choice);
 	std::clock_t endTime = clock();
 	std::clock_t timeDelta = endTime - startTime;

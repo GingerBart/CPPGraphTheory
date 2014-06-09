@@ -17,12 +17,12 @@ private:
 	void rotateBarParse();
 	void rotateBarAnalyzeP1();
 	void rotateBarAnalyzeP2();
+	int barCount;
 	int barCount1;
 	int barCount2;
 	void createCompleteGraph(int, int);
 	void parseMasterData();
-	void dataAnalysis1(int);
-	void dataAnalysis2(int);
+	void dataAnalysis(int);
 };
 
 #endif
