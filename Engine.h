@@ -2,6 +2,7 @@
 #define GUARD_Engine_h
 
 #include "PetersenGraph.h"
+#include <string>
 
 class Engine {
 public:
@@ -14,7 +15,7 @@ private:
 	void printIntro();
 	void printStartMenu();
 	void startMenuChoices(int);
-	void createPetersenGraph(int);
+	void createPetersenGraph(int, std::string);
 	void rotateBarParse();
 	void rotateBarParsePlayer1();
 	void rotateBarParsePlayer2();
@@ -23,7 +24,7 @@ private:
 	int barCount;
 	int barCount1;
 	int barCount2;
-	void createCompleteGraph(int, int);
+	void createCompleteGraph(int, int, std::string);
 	void parseMasterData();
 	void parsePlayerLogicalData();
 	void dataAnalysis(int);

@@ -3,7 +3,8 @@
 #include <iostream>
 #include <algorithm>
 #include <iterator>
-#include <fstream>						//for saving information to text files
+#include <fstream>	
+//#include <boolean>					
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,13 +23,14 @@
 //Desc: Constructor for the PetersenGraph object. Constructs a PetersenGraph of Nodes,
 //		and creates edges between them.
 //Input: int i for the number of Nodes
-PetersenGraph::PetersenGraph(int i)
+PetersenGraph::PetersenGraph(int i, bool b)
 {
 	gameNumber = i;
+	watch = b;
 	nodeNameCount = 0;
-	for (int j = 1; j <= 10; j++)
+	for (int k = 1; k <= 10; k++)
 	{
-		createInitialNodes(j);
+		createInitialNodes(k);
 		nodeNameCount++;
 	}
 	createInitialEdges();
@@ -198,6 +200,24 @@ int PetersenGraph::getRandomNumber(int size)
 //This is the method that plays the game
 //The master data is sent to the file /output_data/mater_data.txt
 
+void PetersenGraph::rotateBar()
+{
+	barCount++;
+	char barspin[4] = {'\\', '|', '/', '-'};
+	int whichOne;
+	whichOne = barCount % 4;
+	if (whichOne == 3)
+	{
+		std::cout << '\r' << barspin[whichOne] << "  Please wait while the games are played. Game: " << gameNumber;
+	}
+	else
+	{
+		std::cout << '\r' << barspin[whichOne] << "  Please wait while the games are played. Game: " << gameNumber;
+	}
+	std::cout.flush();
+	return;
+}
+
 void PetersenGraph::game()
 {
 	std::ofstream myfile;
@@ -214,89 +234,63 @@ void PetersenGraph::game()
 	Node* nextMoveNode;
 	Token* t = new Token(*iter1);
 	int nextMove = 0;
-	std::cout << "Game " << gameNumber << std::endl;
-	std::cout << std::endl;
-	myfile << (t->getTokenLocation())->getName() << "-";
-	while (true)
+	if (watch == true)
 	{
-        nextMove = getRandomNumber(t->getTokenLocation()->getEdgeListSize());
-        nextMoveNode = t->getTokenLocation()->getNodeAtElement(nextMove);
-        (t->getTokenLocation())->destroyEdge(nextMoveNode);
-        (nextMoveNode)->destroyEdge(t->getTokenLocation());
-        std::cout << "Player " << t->getCurrentPlayerTurn() << " removed edge " << (t->getTokenLocation())->getName() << " - " << (nextMoveNode)->getName() << std::endl;
-        //myfile << "Player " << t->getCurrentPlayerTurn() << " removed edge " << (t->getTokenLocation())->getName() << " - " << (nextMoveNode)->getName() << std::endl;
-        t->setPlayerTurn();
-        t->setTokenLocation(nextMoveNode);
-        if (t->getTokenLocation()->getEdgeListSize() == 0)
-		{
-			//moves += std::to_string((t->getTokenLocation())->getName());
-			t->setPlayerTurn();
-			std::cout << std::endl;
-			//myfile << "Player " << t->getCurrentPlayerTurn() << " wins!\n";
-			myfile << t->getCurrentPlayerTurn() << std::endl;		
-			std::cout << "Player " << t->getCurrentPlayerTurn() << " wins!" << std::endl;
-			std::cout << std::endl;
-//			if (t->getCurrentPlayerTurn() == 1)
-//				player1.push_back(moves);
-//			else
-//				player2.push_back(moves);
-			//myfile << (t->getTokenLocation())->getName() << std::endl;
-			//moves.clear();
-			//myfile.close();
-			break;
-		}
+		std::cout << "Game " << gameNumber << std::endl;
+		std::cout << std::endl;
 		myfile << (t->getTokenLocation())->getName() << "-";
-		//moves += std::to_string((t->getTokenLocation())->getName()) + "-";
+		while (true)
+		{
+    	    nextMove = getRandomNumber(t->getTokenLocation()->getEdgeListSize());
+        	nextMoveNode = t->getTokenLocation()->getNodeAtElement(nextMove);
+			(t->getTokenLocation())->destroyEdge(nextMoveNode);
+	        (nextMoveNode)->destroyEdge(t->getTokenLocation());
+	        std::cout << "Player " << t->getCurrentPlayerTurn() << " removed edge " << (t->getTokenLocation())->getName() << " - " << (nextMoveNode)->getName() << std::endl;
+	        //myfile << "Player " << t->getCurrentPlayerTurn() << " removed edge " << (t->getTokenLocation())->getName() << " - " << (nextMoveNode)->getName() << std::endl;
+	        t->setPlayerTurn();
+	        t->setTokenLocation(nextMoveNode);
+	        if (t->getTokenLocation()->getEdgeListSize() == 0)
+			{
+				//moves += std::to_string((t->getTokenLocation())->getName());
+				t->setPlayerTurn();
+				std::cout << std::endl;
+				//myfile << "Player " << t->getCurrentPlayerTurn() << " wins!\n";
+				myfile << t->getCurrentPlayerTurn() << std::endl;		
+				std::cout << "Player " << t->getCurrentPlayerTurn() << " wins!" << std::endl;
+				std::cout << std::endl;
+				break;
+			}
+			myfile << (t->getTokenLocation())->getName() << "-";
+			//moves += std::to_string((t->getTokenLocation())->getName()) + "-";
 		
+		}
 	}
+	else
+	{
+		myfile << (t->getTokenLocation())->getName() << "-";
+		while (true)
+		{
+    	    rotateBar();
+    	    nextMove = getRandomNumber(t->getTokenLocation()->getEdgeListSize());
+        	nextMoveNode = t->getTokenLocation()->getNodeAtElement(nextMove);
+			(t->getTokenLocation())->destroyEdge(nextMoveNode);
+	        (nextMoveNode)->destroyEdge(t->getTokenLocation());
+	        //myfile << "Player " << t->getCurrentPlayerTurn() << " removed edge " << (t->getTokenLocation())->getName() << " - " << (nextMoveNode)->getName() << std::endl;
+	        t->setPlayerTurn();
+	        t->setTokenLocation(nextMoveNode);
+	        if (t->getTokenLocation()->getEdgeListSize() == 0)
+			{
+				//moves += std::to_string((t->getTokenLocation())->getName());
+				t->setPlayerTurn();
+				//myfile << "Player " << t->getCurrentPlayerTurn() << " wins!\n";
+				myfile << t->getCurrentPlayerTurn() << std::endl;		
+				break;
+			}
+			myfile << (t->getTokenLocation())->getName() << "-";
+		}
+	}
+		
 	delete t;
 	myfile.close();
 	
 }
-/*
-void PetersenGraph::analysis(int numGames)
-{
-	int numberOfGamesPlayed = numGames;
-	std::cout << "-----------------------------------------------" << std::endl;
-	std::cout << "Game Analysis" << std::endl;
-	std::cout << std::endl;
-	std::cout << "Of the " << numGames << " games played:" << std::endl;
-	std::cout << std::endl;
-	std::cout << "Player 1 won " << player1.size() << "." << std::endl;
-	std::cout << "Player 2 won " << player2.size() << "." << std::endl;
-	std::vector<std::string> player1moves;
-	std::vector<std::string> player2moves;
-	for (std::vector<std::string>::iterator i = player1.begin(); i != player1.end(); i++)
-	{
-		std::vector<std::string>::iterator it = find(player1moves.begin(), player1moves.end(), *i);
-		if (it == player1moves.end()) {
-			player1moves.push_back(*i);
-		}	
-	}
-	for (std::vector<std::string>::iterator i = player2.begin(); i != player2.end(); i++)
-	{
-		std::vector<std::string>::iterator it = find(player2moves.begin(), player2moves.end(), *i);
-		if (it == player2moves.end()) {
-			player2moves.push_back(*i);
-		}	
-	}
-	std::sort(player1moves.begin(), player1moves.end());
-	std::sort(player2moves.begin(), player2moves.end());
-	std::cout << std::endl;
-	std::cout << "There are " << player1moves.size() << " unique moves for Player 1." << std::endl;
-	std::cout << "There are " << player2moves.size() << " unique moves for Player 2." << std::endl;
-	std::cout << std::endl;
-	std::cout << "The following moves led to Player 1's victory:" << std::endl;
-	for (std::vector<std::string>::iterator i = player1moves.begin(); i != player1moves.end(); i++)
-	{
-		std::cout << *i << std::endl;
-	}
-	std::cout << std::endl;
-	std::cout << "The following moves led to Player 2's victory:" << std::endl;
-	for (std::vector<std::string>::iterator i = player2moves.begin(); i != player2moves.end(); i++)
-	{
-		std::cout << *i << std::endl;
-	}
-	std::cout << std::endl;
-}
-*/

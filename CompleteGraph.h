@@ -9,7 +9,7 @@ class Node;
 
 class CompleteGraph {
 public:
-	CompleteGraph(int, int);
+	CompleteGraph(int, int, bool);
 	virtual ~CompleteGraph();
 	void createInitialEdges();
 	void createInitialNodes(int);
@@ -25,6 +25,9 @@ public:
     
 private:
 	int nodeNameCount; //Keeps track of what the name of the next Node will be
+	void rotateBar();
+	bool watch;
+	int barCount;
 	std::list<Node*> nodeList;
 	
 };

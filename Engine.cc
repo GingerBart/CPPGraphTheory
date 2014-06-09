@@ -41,11 +41,16 @@ void Engine::startMenuChoices(int choice)
 {
 	int numGamesToPlay = 0;
 	int numNodes = 0;
+	std::string watch;
 	if (choice == 1)
 	{
 		std::cout << "How many games would you like to play?: ";
 		std::cin >> numGamesToPlay;
-		createPetersenGraph(numGamesToPlay);
+		std::cout << "Would you like to view the games as they are being played?" << std::endl;
+		std::cout << "\tNote: If running more than 10 million games, 'n' recommended." << std::endl;
+		std::cout << "Watch games? (y,n): ";
+		std::cin >> watch;
+		createPetersenGraph(numGamesToPlay, watch);
 	}
 	else if (choice == 2)
 	{
@@ -53,7 +58,11 @@ void Engine::startMenuChoices(int choice)
 		std::cin >> numNodes;
 		std::cout << "How many games would you like to play?: ";
 		std::cin >> numGamesToPlay;
-		createCompleteGraph(numGamesToPlay, numNodes);
+		std::cout << "Would you like to view the games being played?" << std::endl;
+		std::cout << "\tNote: If running over 150-200 nodes, and/or over 10 million games, 'n' recommended." << std::endl;
+		std::cout << "Watch games? (y,n): ";
+		std::cin >> watch;
+		createCompleteGraph(numGamesToPlay, numNodes, watch);
 	}
 }
 
@@ -127,14 +136,14 @@ void Engine::parsePlayerLogicalData()
 		if (testLine.size() == longestGame)
 			p1logical << testLine << std::endl;
 	}
-	std::cout << "Logical moves extracted from player 1 data successfully!" << std::endl;
+	std::cout << "\nLogical moves extracted from player 1 data successfully!" << std::endl;
 	while (std::getline(p2, testLine))
 	{
 		rotateBarParsePlayer2();
 		if (testLine.size() == longestGame)
 			p1logical << testLine << std::endl;
 	}
-	std::cout << "Logical moves extracted from player 2 data successfully!" << std::endl;
+	std::cout << "\nLogical moves extracted from player 2 data successfully!" << std::endl;
 	p1.close();
 	p2.close();
 	p1logical.close();
@@ -170,7 +179,7 @@ void Engine::dataAnalysis(int choice)
 			player1moves.push_back(testLine);
 		testLine.clear();
 	}
-	std::cout << "\nPlayer 1 data analyzed!" << std::endl;
+	std::cout << "\nPlayer 1 data analyzed successfully!" << std::endl;
 	while (std::getline(p2, testLine))
 	{
 		rotateBarAnalyzeP2();
@@ -179,7 +188,7 @@ void Engine::dataAnalysis(int choice)
 			player2moves.push_back(testLine);
 		testLine.clear();
 	}
-	std::cout << "\nPlayer 2 data analyzed!" << std::endl;
+	std::cout << "\nPlayer 2 data analyzed successfully!" << std::endl;
 	std::cout << std::endl;
 	results << std::endl;
 	p1.close();
@@ -262,11 +271,11 @@ void Engine::rotateBarParsePlayer1()
 	whichOne = barCount % 4;
 	if (whichOne == 3)
 	{
-		std::cout << '\r' << barspin[whichOne] << "  Please wait while player 1 logical moves are extracted...";
+		std::cout << '\r' << barspin[whichOne] << "  Please wait while Player 1's logical moves are extracted...";
 	}
 	else
 	{
-		std::cout << '\r' << barspin[whichOne] << "  Please wait while player 1 logical moves are extracted";
+		std::cout << '\r' << barspin[whichOne] << "  Please wait while Player 1's logical moves are extracted...";
 	}
 	std::cout.flush();
 	return;
@@ -280,11 +289,11 @@ void Engine::rotateBarParsePlayer2()
 	whichOne = barCount % 4;
 	if (whichOne == 3)
 	{
-		std::cout << '\r' << barspin[whichOne] << "  Please wait while player 2 logical moves are extracted";
+		std::cout << '\r' << barspin[whichOne] << "  Please wait while Player 2's logical moves are extracted...";
 	}
 	else
 	{
-		std::cout << '\r' << barspin[whichOne] << "  Please wait while player 2 logical moves are extracted";
+		std::cout << '\r' << barspin[whichOne] << "  Please wait while Player 2's logical moves are extracted...";
 	}
 	std::cout.flush();
 	return;
@@ -327,14 +336,21 @@ void Engine::rotateBarAnalyzeP2()
 }
 
 
-void Engine::createPetersenGraph(int choice)
+void Engine::createPetersenGraph(int choice, std::string watch)
 {
 	std::clock_t startTime = clock();
-	for (int i = 1; i <= choice; i++)
-	{
-		PetersenGraph *a = new PetersenGraph(i);
-		delete a;
-	}
+	if (watch == "y" || watch == "Y")
+		for (int i = 1; i <= choice; i++)
+		{
+			PetersenGraph *a = new PetersenGraph(i, true);
+			delete a;
+		}
+	else if (watch == "n" || watch == "N")
+		for (int i = 1 ; i <= choice; i++)
+		{
+			PetersenGraph *a = new PetersenGraph(i, false);
+			delete a;
+		}
 	parseMasterData();
 	dataAnalysis(choice);
 	//Surface *a = new Surface(choice);
@@ -365,16 +381,23 @@ void Engine::createPetersenGraph(int choice)
 	std::cout << std::endl;
 }
 
-void Engine::createCompleteGraph(int numGames, int numNodes)
+void Engine::createCompleteGraph(int numGames, int numNodes, std::string watch)
 {
 	//int numberOfNodes = numNodes;
 	std::clock_t startTime = clock();
-	for (int i = 1; i <= numGames; i++)
-	{
-		CompleteGraph *a = new CompleteGraph(i, numNodes);
-		delete a;
-	}
-	std::cout << "-----------------------------------------------\n" << std::endl;
+	if (watch == "y" || watch == "Y")
+		for (int i = 1; i <= numGames; i++)
+		{
+			CompleteGraph *a = new CompleteGraph(i, numNodes, true);
+			delete a;
+		}
+	else if (watch == "n" || watch == "N")
+		for (int i = 1 ; i <= numGames; i++)
+		{
+			CompleteGraph *a = new CompleteGraph(i, numNodes, false);
+			delete a;
+		}
+	std::cout << "\n\n-----------------------------------------------\n" << std::endl;
 	parseMasterData();
 	parsePlayerLogicalData();
 	dataAnalysis(numGames);
