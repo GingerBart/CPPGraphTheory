@@ -48,8 +48,9 @@ void Engine::startMenuChoices(int choice)
 		std::cin >> numGamesToPlay;
 		std::cout << "Would you like to view the games as they are being played?" << std::endl;
 		std::cout << "\tNote: If running more than 10 million games, 'n' recommended." << std::endl;
-		std::cout << "Watch games? (y,n): ";
+		std::cout << "Watch games? (y/n): ";
 		std::cin >> watch;
+		std::cout << std::endl;
 		createPetersenGraph(numGamesToPlay, watch);
 	}
 	else if (choice == 2)
@@ -60,8 +61,9 @@ void Engine::startMenuChoices(int choice)
 		std::cin >> numGamesToPlay;
 		std::cout << "Would you like to view the games being played?" << std::endl;
 		std::cout << "\tNote: If running over 150-200 nodes, and/or over 10 million games, 'n' recommended." << std::endl;
-		std::cout << "Watch games? (y,n): ";
+		std::cout << "Watch games? (y/n): ";
 		std::cin >> watch;
+		std::cout << std::endl;
 		createCompleteGraph(numGamesToPlay, numNodes, watch);
 	}
 }
@@ -218,29 +220,56 @@ void Engine::dataAnalysis(int choice)
 	results << "There are " << player2moves.size() << " unique moves for Player 2." << std::endl;
 	std::cout << std::endl;
 	results << std::endl;
-	std::cout << "The following moves led to Player 1's victory:" << std::endl;
-	results << "The following moves led to Player 1's victory:" << std::endl;
-	for (std::vector<std::string>::iterator i = player1moves.begin(); i != player1moves.end(); i++)
+	std::cout << "Do you want to view the unique moves?" << std::endl;
+	std::cout << "\tNote: the moves will be saved to file regardless of choice." << std::endl;
+	std::cout << "View moves? (y/n): ";
+	std::string s;
+	std::cin >> s;
+	if (s == "y" || s == "y")
 	{
-		std::cout << *i << std::endl;
-		results << *i << std::endl;
-//		if (i->size() > longestGame)
-//			longestGame = i->size();
+		std::cout << "The following moves led to Player 1's victory:" << std::endl;
+		results << "The following moves led to Player 1's victory:" << std::endl;
+		for (std::vector<std::string>::iterator i = player1moves.begin(); i != player1moves.end(); i++)
+		{
+			std::cout << *i << std::endl;
+			results << *i << std::endl;
+	//		if (i->size() > longestGame)
+	//			longestGame = i->size();	
+		}
+		std::cout << std::endl;
+		results << std::endl;
+		std::cout << "The following moves led to Player 2's victory:" << std::endl;
+		results << "The following moves led to Player 2's victory:" << std::endl;
+		for (std::vector<std::string>::iterator i = player2moves.begin(); i != player2moves.end(); i++)
+		{
+			std::cout << *i << std::endl;
+			results << *i << std::endl;
+//			if (i->size() > longestGame)
+//				longestGame = i->size();
+		}
+		std::cout << std::endl;
+		results << std::endl;
 	}
-	std::cout << std::endl;
-	results << std::endl;
-	std::cout << "The following moves led to Player 2's victory:" << std::endl;
-	results << "The following moves led to Player 2's victory:" << std::endl;
-	for (std::vector<std::string>::iterator i = player2moves.begin(); i != player2moves.end(); i++)
+	else
 	{
-		std::cout << *i << std::endl;
-		results << *i << std::endl;
-//		if (i->size() > longestGame)
-//			longestGame = i->size();
+		results << "The following moves led to Player 1's victory:" << std::endl;
+		for (std::vector<std::string>::iterator i = player1moves.begin(); i != player1moves.end(); i++)
+		{
+			results << *i << std::endl;
+	//		if (i->size() > longestGame)
+	//			longestGame = i->size();	
+		}
+		results << std::endl;
+		results << "The following moves led to Player 2's victory:" << std::endl;
+		for (std::vector<std::string>::iterator i = player2moves.begin(); i != player2moves.end(); i++)
+		{
+			results << *i << std::endl;
+//			if (i->size() > longestGame)
+//				longestGame = i->size();
+		}
+		results << std::endl;
 	}
-	std::cout << std::endl;
-	results << std::endl;
-	std::cout << "The longest game was " << (longestGame + 1) / 2 << " moves.\n" << std::endl;
+	std::cout << "\nThe longest game was " << (longestGame + 1) / 2 << " moves.\n" << std::endl;
 	results << "The longest game was " << (longestGame + 1) / 2 << " moves.\n" << std::endl;
 	results.close();
 }
